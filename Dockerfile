@@ -13,6 +13,38 @@ ENV SHELL=/bin/bash
 RUN sudo apt-get update && sudo apt-get install unzip -y
 RUN curl https://rclone.org/install.sh | sudo bash
 
+# -----------
+# Add snapd and Snapcrafting tools
+# Copied from https://github.com/snapcore/snapcraft/blob/master/docker/stable.Dockerfile
+# Expect builds to fail
+
+# Grab the core snap (for backwards compatibility) from the stable channel and
+# unpack it in the proper place.
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core' | jq '.download_url' -r) --output core.snap
+RUN sudo mkdir -p /snap/core
+RUN sudo unsquashfs -d /snap/core/current core.snap
+
+# Grab the core18 snap (which snapcraft uses as a base) from the stable channel
+# and unpack it in the proper place.
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core18' | jq '.download_url' -r) --output core18.snap
+RUN sudo mkdir -p /snap/core18
+RUN sudo unsquashfs -d /snap/core18/current core18.snap
+
+# Grab the snapcraft snap from the stable channel and unpack it in the proper
+# place.
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/snapcraft?channel=stable' | jq '.download_url' -r) --output snapcraft.snap
+RUN sudo mkdir -p /snap/snapcraft
+RUN sudo unsquashfs -d /snap/snapcraft/current snapcraft.snap
+
+# Create a snapcraft runner (TODO: move version detection to the core of
+# snapcraft).
+RUN sudo mkdir -p /snap/bin
+RUN sudo echo "#!/bin/sh" > /snap/bin/snapcraft
+RUN snap_version="$(awk '/^version:/{print $2}' /snap/snapcraft/current/meta/snap.yaml)" && sudo echo "export SNAP_VERSION=\"$snap_version\"" >> /snap/bin/snapcraft
+RUN sudo echo 'exec "$SNAP/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
+RUN sudo chmod +x /snap/bin/snapcraft
+# -----------
+
 # Copy rclone tasks to /tmp, to potentially be used
 COPY deploy-container/rclone-tasks.json /tmp/rclone-tasks.json
 
@@ -22,15 +54,15 @@ RUN sudo chown -R coder:coder /home/coder/.local
 # You can add custom software and dependencies for your environment below
 # -----------
 
-# Install a VS Code extension:
-# Note: we use a different marketplace than VS Code. See https://github.com/cdr/code-server/blob/main/docs/FAQ.md#differences-compared-to-vs-code
+# If installing extensions, please search in Open VSIX website due to legal reasons. Blame Microsoft for this.
+# See https://github.com/cdr/code-server/blob/main/docs/FAQ.md#differences-compared-to-vs-code
 # RUN code-server --install-extension esbenp.prettier-vscode
 
-# Install apt packages:
-# RUN sudo apt-get install -y ubuntu-make
-
-# Copy files: 
-# COPY deploy-container/myTool /home/coder/myTool
+# Install Node.js 14.x
+RUN sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -
+RUN sudo apt-get install -y nodejs
+# Don't forget to update npm
+RUN sudo npm install -g npm
 
 # -----------
 
