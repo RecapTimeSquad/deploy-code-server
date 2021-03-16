@@ -47,7 +47,7 @@ RUN snap_version="$(awk '/^version:/{print $2}' /snap/snapcraft/current/meta/sna
 RUN echo 'exec "$SNAP/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
 RUN chmod +x /snap/bin/snapcraft
 
-RUN apt-get install snapd
+RUN apt-get install snapd -y
 # -----------
 
 # after doing some snapd setup, ensure it switched to the user 'coder'
