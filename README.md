@@ -1,18 +1,7 @@
-# deploy-code-server 🚀
+# The Pins Team's Code Server deplpyment repo
 
-A collection of one-click buttons and scripts for deploying [code-server](https://github.com/cdr/code-server) to various cloud hosting platforms. The fastest way to get a code-server environment! ☁️
-
-|                                                                                                                 | Name              | Type          | Lowest-Price Plan                     | Deploy                                                  |
-| --------------------------------------------------------------------------------------------------------------- | ----------------- | ------------- | ------------------------------------- | ------------------------------------------------------- |
-| [![DigitalOcean](img/logo/digitalocean.png)](https://digitalocean.com)                                          | DigitalOcean      | VM            | $5/mo, 1 CPU, 1 GB RAM                | [see guide](guides/digitalocean.md)                     |
-| [![Vultr](img/logo/vultr.png)](https://vultr.com)                                                               | Vultr             | VM            | $3.50/mo, 1 CPU, 512 MB RAM           | coming soon                                             |
-| [![Linode](img/logo/linode.png)](https://linode.com)                                                            | Linode            | VM            | $5/mo, 1 CPU, 1 GB RAM                | [see guide](guides/linode.md)                           |
-| [![Railway](img/logo/railway.png)](https://railway.app)                                                         | Railway           | Container     | Free, specs unknown, but very fast 🚀 | [see guide](guides/railway.md)                          |
-| [![Heroku](img/logo/heroku.png)](https://heroku.com)                                                            | Heroku            | Container     | Free, 1 CPU, 512 MB RAM               | [see guide](guides/heroku.md)                           |
-| [![Azure App Service](img/logo/azure-app-service.png)](https://azure.microsoft.com/en-us/services/app-service/) | Azure App Service | Container     | Free, 1 CPU, 1 GB RAM                 | [see guide](https://github.com/bpmct/code-server-azure) |
-| [![Coder](img/logo/coder.png)](https://coder.com/docs)                                                          | Coder             | Dev Workspace | For developer teams 👨🏼‍💻                | [read the docs](https://coder.com/docs)                 |
-
----
+This repository containing the toolkit and Dockerfile for running
+your own Code Server on the container-based PaaS services.
 
 ## code-server on a VM vs. a Container
 
@@ -25,4 +14,12 @@ A collection of one-click buttons and scripts for deploying [code-server](https:
   - Containers can shut down when you are not using them, saving you money
   - All software and dependencies need to be defined in the `Dockerfile` or install script so they aren't destroyed on a rebuild. This is great if you want to have a new, clean environment every time you code
   - Storage may not be redundant. You may have to use [rclone](https://rclone.org/) to store your filesystem on a cloud service, for info:
-- [📄 Docs for code-server-deploy-container](deploy-container/)
+  - [📄 Docs for code-server-deploy-container](deploy-container/)
+
+## Add more dependencies?
+
+_(especially new extensions?)_
+
+* If it's just for you, please fork the repo and edit `Dockerfile`.
+* For repo collaborators, you can either do editing the `Dockerfile`
+(which may break the CI builds) or send an PR.
