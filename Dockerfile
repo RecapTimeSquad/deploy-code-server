@@ -42,8 +42,7 @@ RUN sudo apt-get install -y nodejs
 RUN sudo npm install -g npm
 
 # Download Golang
-RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
-RUN sudo rm -rf /usr/local/go \
+RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz \
     && sudo echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile \
     && rm -rfv go*.tar.gz
