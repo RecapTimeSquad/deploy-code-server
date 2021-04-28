@@ -35,7 +35,7 @@ RUN code-server --install-extension esbenp.prettier-vscode
 RUN sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -
 RUN sudo apt-get install -y nodejs
 # Don't forget to update npm and install Yarn
-RUN sudo npm install -g npm yarn
+RUN sudo npm install -g npm
 
 # Download Golang
 RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
