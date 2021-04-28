@@ -44,7 +44,7 @@ RUN sudo npm install -g npm
 # Download Golang
 RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz \
-    && sudo echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile \
+    && echo "export PATH=$PATH:/usr/local/go/bin" >> /home/coder/.bashrc \
     && rm -rfv go*.tar.gz
 
 # Install Python 3.x
