@@ -51,9 +51,10 @@ RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
 
 # Install Python 3.x
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
+    && mkdir /home/code/.bashrc.d -p \
     && { echo; \
         echo 'eval "$(pyenv init -)"'; \
-        echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/gitpod/.bashrc.d/60-python \
+        echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/coder/.bashrc.d/60-python \
     && pyenv update \
     && pyenv install 3.8.9 \
     && pyenv global 3.8.9 \
