@@ -58,22 +58,13 @@ RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz \
 
-# Install Python 3.x
-ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH
-RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
-    && { echo; \
-        echo 'eval "$(pyenv init -)"'; \
-        echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/coder/.bashrc.d/60-python \
-    && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" \
-    && pyenv update \
-    && pyenv install 3.8.9 \
-    && pyenv global 3.8.9 \
-    && python3 -m pip install --no-cache-dir --upgrade pip \
-    && python3 -m pip install --no-cache-dir --upgrade \
-        setuptools wheel virtualenv pipenv pylint rope flake8 \
+# Install Python 3.x from APT
+RUN sudo apt-get install python3 python3-pip -y \
+    && sudo python3 -m pip install --no-cache-dir --upgrade pip \
+    && sudo python3 -m pip install --no-cache-dir --upgrade \
+       setuptools wheel virtualenv pipenv pylint rope flake8 \
         mypy autopep8 pep8 pylama pydocstyle bandit notebook \
-        twine \
-    && sudo rm -rf /tmp/*
+        twine
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
