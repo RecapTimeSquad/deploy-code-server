@@ -64,6 +64,7 @@ RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-ins
     && { echo; \
         echo 'eval "$(pyenv init -)"'; \
         echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/coder/.bashrc.d/60-python \
+    && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" \
     && pyenv update \
     && pyenv install 3.8.9 \
     && pyenv global 3.8.9 \
