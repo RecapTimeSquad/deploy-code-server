@@ -56,15 +56,15 @@ ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 ENV PATH=/usr/local/go/bin:$PATH
 RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
-    && rm -rfv go*.tar.gz \
+    && rm -rfv go*.tar.gz
 
 # Install Python 3.x from APT
 RUN sudo apt install --yes python3 python3-pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade \
-       setuptools wheel virtualenv pipenv pylint rope flake8 \
-        mypy autopep8 pep8 pylama pydocstyle bandit notebook \
-        twine
+       setuptools wheel virtualenv pipenv pylint \
+       rope flake8 mypy autopep8 pep8 \
+       pylama pydocstyle bandit notebook twine
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
