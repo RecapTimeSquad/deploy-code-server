@@ -26,7 +26,7 @@ RUN sudo chown -R coder:coder /home/coder/.local
 
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 RUN sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
-    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -
+    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
 
 # You can add custom software and dependencies for your environment below
 # -----------
