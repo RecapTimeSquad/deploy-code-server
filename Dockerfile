@@ -26,7 +26,7 @@ RUN sudo chown -R coder:coder /home/coder/.local
 
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 RUN sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
-    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
+    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -
 
 # You can add custom software and dependencies for your environment below
 # -----------
@@ -35,14 +35,22 @@ RUN sudo apt-get install --no-install-recommends make build-essential libssl-dev
 # See https://github.com/cdr/code-server/blob/main/docs/FAQ.md#differences-compared-to-vs-code
 RUN code-server --install-extension esbenp.prettier-vscode
 
-# Install Node.js 14.x
-RUN sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash -
-RUN sudo apt-get install -y nodejs
-# Don't forget to update npm and install Yarn
-RUN sudo npm install -g npm
-
 # Ensure Go and Pyenv paths are there
-ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/go/bin:$PATH
+ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/go/bin:$HOME/.nvm:$PATH
+
+ENV NODE_VERSION=14.16.1
+#ENV GOLANG_VERSION=
+
+# Install Node.js 14.x
+RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | PROFILE=/dev/null bash \
+    && bash -c ". .nvm/nvm.sh \
+        && nvm install $NODE_VERSION \
+        && nvm alias default $NODE_VERSION \
+        && npm install -g typescript yarn node-gyp" \
+    && echo ". ~/.nvm/nvm-lazy.sh"  >> /home/coder/.bashrc.d/50-node
+# above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
+COPY --chown=coder:coder deploy-container/nvm-lazy.sh /home/coder/.nvm/nvm-lazy.sh
+ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 # Download Golang
 RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
@@ -51,7 +59,7 @@ RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
 
 # Install Python 3.x
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
-    && mkdir /home/code/.bashrc.d -p \
+    && mkdir /home/coder/.bashrc.d -p \
     && { echo; \
         echo 'eval "$(pyenv init -)"'; \
         echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/coder/.bashrc.d/60-python \
