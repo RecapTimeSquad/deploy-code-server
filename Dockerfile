@@ -68,8 +68,7 @@ RUN sudo apt install --yes python3 python3-pip \
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
-    && sudo dpkg -i cloudflared-stable-linux-amd64.deb \
-    && rm cloduflared-stable-linux.amd64.deb
+    && sudo dpkg -i cloudflared-stable-linux-amd64.deb
 
 # -----------
 
