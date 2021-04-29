@@ -10,7 +10,7 @@ COPY deploy-container/settings.json .local/share/code-server/User/settings.json
 ENV SHELL=/bin/bash
 
 # Install unzip + rclone (support for remote filesystem)
-RUN sudo apt-get update && sudo apt-get install unzip jq -y \
+RUN sudo apt update && sudo apt install --yes unzip jq \
     && curl https://rclone.org/install.sh | sudo bash
 
 # after doing some snapd setup, ensure it switched to the user 'coder'
@@ -28,7 +28,7 @@ COPY deploy-container/rclone-tasks.json /tmp/rclone-tasks.json
 RUN sudo chown -R coder:coder /home/coder/.local
 
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-RUN yes | sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
+RUN sudo apt install --yes --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
     libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 # You can add custom software and dependencies for your environment below
@@ -59,7 +59,7 @@ RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz \
 
 # Install Python 3.x from APT
-RUN yes | sudo apt-get install python3 python3-pip \
+RUN sudo apt install --yes python3 python3-pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade \
        setuptools wheel virtualenv pipenv pylint rope flake8 \
