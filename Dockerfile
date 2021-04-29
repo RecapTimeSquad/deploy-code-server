@@ -10,7 +10,7 @@ COPY deploy-container/settings.json .local/share/code-server/User/settings.json
 ENV SHELL=/bin/bash
 
 # Install unzip + rclone (support for remote filesystem)
-RUN sudo apt-get update && sudo apt-get install unzip jq wget -y
+RUN sudo apt-get update && sudo apt-get install unzip jq -y
 RUN curl https://rclone.org/install.sh | sudo bash
 
 # after doing some snapd setup, ensure it switched to the user 'coder'
@@ -41,16 +41,28 @@ RUN sudo apt-get install -y nodejs
 # Don't forget to update npm and install Yarn
 RUN sudo npm install -g npm
 
+# Ensure Go and Pyenv paths are there
+ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/go/bin:$PATH
+
 # Download Golang
 RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz \
-    && echo "export PATH=$PATH:/usr/local/go/bin" >> /home/coder/.bashrc \
     && rm -rfv go*.tar.gz
 
 # Install Python 3.x
-RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
-    && pyenv install 3.9.4 \
-    && pyenv global 3.9.4
+RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
+    && { echo; \
+        echo 'eval "$(pyenv init -)"'; \
+        echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/gitpod/.bashrc.d/60-python \
+    && pyenv update \
+    && pyenv install 3.8.9 \
+    && pyenv global 3.8.9 \
+    && python3 -m pip install --no-cache-dir --upgrade pip \
+    && python3 -m pip install --no-cache-dir --upgrade \
+        setuptools wheel virtualenv pipenv pylint rope flake8 \
+        mypy autopep8 pep8 pylama pydocstyle bandit notebook \
+        twine \
+    && sudo rm -rf /tmp/*
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
