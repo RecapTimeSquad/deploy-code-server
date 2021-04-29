@@ -38,9 +38,6 @@ RUN sudo apt-get install --no-install-recommends make build-essential libssl-dev
 # See https://github.com/cdr/code-server/blob/main/docs/FAQ.md#differences-compared-to-vs-code
 RUN code-server --install-extension esbenp.prettier-vscode
 
-# Ensure Go and Pyenv paths are there
-ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/go/bin:$HOME/.nvm:$PATH
-
 ENV NODE_VERSION=14.16.1
 ENV GOLANG_VERSION=1.16.3
 
@@ -56,11 +53,13 @@ COPY --chown=coder:coder deploy-container/nvm-lazy.sh /home/coder/.nvm/nvm-lazy.
 ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 # Download Golang
+ENV PATH=/usr/local/go/bin:$PATH
 RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
-    && rm -rfv go*.tar.gz
+    && rm -rfv go*.tar.gz \
 
 # Install Python 3.x
+ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
     && { echo; \
         echo 'eval "$(pyenv init -)"'; \
