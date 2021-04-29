@@ -28,8 +28,8 @@ COPY deploy-container/rclone-tasks.json /tmp/rclone-tasks.json
 RUN sudo chown -R coder:coder /home/coder/.local
 
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-RUN sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
-    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y
+RUN yes | sudo apt-get install --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
+    libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 # You can add custom software and dependencies for your environment below
 # -----------
@@ -59,7 +59,7 @@ RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz \
 
 # Install Python 3.x from APT
-RUN sudo apt-get install python3 python3-pip -y \
+RUN yes | sudo apt-get install python3 python3-pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade pip \
     && sudo python3 -m pip install --no-cache-dir --upgrade \
        setuptools wheel virtualenv pipenv pylint rope flake8 \
