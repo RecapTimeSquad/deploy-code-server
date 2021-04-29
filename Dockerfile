@@ -10,13 +10,16 @@ COPY deploy-container/settings.json .local/share/code-server/User/settings.json
 ENV SHELL=/bin/bash
 
 # Install unzip + rclone (support for remote filesystem)
-RUN sudo apt-get update && sudo apt-get install unzip jq -y
-RUN curl https://rclone.org/install.sh | sudo bash
+RUN sudo apt-get update && sudo apt-get install unzip jq -y \
+    && curl https://rclone.org/install.sh | sudo bash
 
 # after doing some snapd setup, ensure it switched to the user 'coder'
 # and it's working directory is on $HOME
 USER coder
 WORKDIR /home/coder
+
+RUN mkdir /home/coder/.bashrc.d -p \
+    && (echo; echo "for i in \$(ls \$HOME/.bashrc.d/*); do source \$i; done"; echo) >> /home/coder/.bashrc
 
 # Copy rclone tasks to /tmp, to potentially be used
 COPY deploy-container/rclone-tasks.json /tmp/rclone-tasks.json
@@ -39,7 +42,7 @@ RUN code-server --install-extension esbenp.prettier-vscode
 ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/go/bin:$HOME/.nvm:$PATH
 
 ENV NODE_VERSION=14.16.1
-#ENV GOLANG_VERSION=
+ENV GOLANG_VERSION=1.16.3
 
 # Install Node.js 14.x
 RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | PROFILE=/dev/null bash \
@@ -53,13 +56,12 @@ COPY --chown=coder:coder deploy-container/nvm-lazy.sh /home/coder/.nvm/nvm-lazy.
 ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 # Download Golang
-RUN wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz \
-    && sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz \
+RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
+    && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz
 
 # Install Python 3.x
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
-    && mkdir /home/coder/.bashrc.d -p \
     && { echo; \
         echo 'eval "$(pyenv init -)"'; \
         echo 'eval "$(pyenv virtualenv-init -)"'; } >> /home/coder/.bashrc.d/60-python \
