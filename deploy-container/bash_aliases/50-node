@@ -1,0 +1,2 @@
+# automagically import nvm stuff
+. ~/.nvm/nvm-lazy.sh

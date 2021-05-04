@@ -20,6 +20,7 @@ WORKDIR /home/coder
 
 RUN mkdir /home/coder/.bashrc.d -p \
     && (echo; echo "for i in \$(ls \$HOME/.bashrc.d/*); do source \$i; done"; echo) >> /home/coder/.bashrc
+COPY deploy-container/bash_aliases/ /hone/coder/.bashrc.d/
 
 # Copy rclone tasks to /tmp, to potentially be used
 COPY deploy-container/rclone-tasks.json /tmp/rclone-tasks.json
@@ -38,33 +39,48 @@ RUN sudo apt install --yes --no-install-recommends make build-essential libssl-d
 # See https://github.com/cdr/code-server/blob/main/docs/FAQ.md#differences-compared-to-vs-code
 RUN code-server --install-extension esbenp.prettier-vscode
 
-ENV NODE_VERSION=14.16.1
-ENV GOLANG_VERSION=1.16.3
+# hard-code versions using environment variables during build-time
+ENV NODE_VERSION=14.16.1 \
+    GOLANG_VERSION=1.16.3 \
+    PYTHON_VERSION=3.8.9
 
-# Install Node.js 14.x
+### Node.js ###
 RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | PROFILE=/dev/null bash \
     && bash -c ". .nvm/nvm.sh \
         && nvm install $NODE_VERSION \
         && nvm alias default $NODE_VERSION \
-        && npm install -g typescript yarn node-gyp" \
-    && echo ". ~/.nvm/nvm-lazy.sh"  >> /home/coder/.bashrc.d/50-node
+        && npm install -g typescript yarn node-gyp"
 # above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
 COPY --chown=coder:coder deploy-container/nvm-lazy.sh /home/coder/.nvm/nvm-lazy.sh
 ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
-# Download Golang
+### Golang ###
 ENV PATH=/usr/local/go/bin:$PATH
 RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz
 
-# Install Python 3.x from APT
-RUN sudo apt install --yes python3 python3-pip \
-    && sudo python3 -m pip install --no-cache-dir --upgrade pip \
-    && sudo python3 -m pip install --no-cache-dir --upgrade \
-       setuptools wheel virtualenv pipenv pylint \
-       rope flake8 mypy autopep8 pep8 \
-       pylama pydocstyle bandit notebook twine
+### Python ###
+ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH
+RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
+    && eval "$(/home/coder/.pyenv/bin/pyenv init -)" \
+    && eval "$(/home/coder/.pyenv/bin/pyenv virtualenv-init -)" \
+    && /home/coder/.pyenv/bin/pyenv update && /home/coder/.pyenv/bin/pyenv install $PYTHON_VERSION \
+    && /home/coder/.pyenv/bin/pyenv global $PYTHON_VERSION \
+    && /home/coder/.pyenv/shims/python3 -m pip install --no-cache-dir --upgrade pip \
+    && /home/coder/.pyenv/shims/python3 -m pip install --no-cache-dir --upgrade \
+        setuptools wheel virtualenv pipenv pylint rope flake8 \
+        mypy autopep8 pep8 pylama pydocstyle bandit notebook \
+        twine
+
+### Rust ###
+RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.51.0 \
+    && .cargo/bin/rustup component add \
+        rls \
+        rust-analysis \
+        rust-src \
+    && .cargo/bin/rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
+    && .cargo/bin/rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
