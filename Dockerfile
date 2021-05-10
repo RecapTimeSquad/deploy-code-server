@@ -19,7 +19,9 @@ USER coder
 WORKDIR /home/coder
 
 RUN mkdir /home/coder/.bashrc.d -p \
-    && (echo; echo "for i in \$(ls \$HOME/.bashrc.d/*); do source \$i; done"; echo) >> /home/coder/.bashrc
+    && { echo; \
+        echo "for i in \$(ls \$HOME/.bashrc.d); do source \$i; done"; \
+        echo } >> /home/coder/.bashrc
 COPY deploy-container/bash_aliases/ /hone/coder/.bashrc.d/
 
 # Copy rclone tasks to /tmp, to potentially be used
