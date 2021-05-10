@@ -76,7 +76,7 @@ RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-ins
 
 ### Rust ###
 RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.51.0 \
-    && .rustup component add \
+    && rustup component add \
         rls \
         rust-analysis \
         rust-src \
