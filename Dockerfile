@@ -45,6 +45,9 @@ ENV NODE_VERSION=14.16.1 \
     GOLANG_VERSION=1.16.3 \
     PYTHON_VERSION=3.8.9
 
+# hard-core our Stuff
+ENV PATH=/home/coder/.cargo/bin:/home/coder/.pyenv/bin:/home/coder/.pyenv/shims:/home/coder/.nvm/versions/node/v${NODE_VERSION}/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 ### Node.js ###
 RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | PROFILE=/dev/null bash \
     && bash -c ". .nvm/nvm.sh \
@@ -53,39 +56,39 @@ RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh |
         && npm install -g typescript yarn node-gyp"
 # above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
 COPY --chown=coder:coder deploy-container/nvm-lazy.sh /home/coder/.nvm/nvm-lazy.sh
-ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 ### Golang ###
-ENV PATH=/usr/local/go/bin:$PATH
 RUN wget https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && sudo tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz \
     && rm -rfv go*.tar.gz
 
 ### Python ###
-ENV PATH=$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH
 RUN curl -fsSL https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash \
     && eval "$(/home/coder/.pyenv/bin/pyenv init -)" \
     && eval "$(/home/coder/.pyenv/bin/pyenv virtualenv-init -)" \
-    && /home/coder/.pyenv/bin/pyenv update && /home/coder/.pyenv/bin/pyenv install $PYTHON_VERSION \
-    && /home/coder/.pyenv/bin/pyenv global $PYTHON_VERSION \
-    && /home/coder/.pyenv/shims/python3 -m pip install --no-cache-dir --upgrade pip \
-    && /home/coder/.pyenv/shims/python3 -m pip install --no-cache-dir --upgrade \
+    && pyenv update && /home/coder/.pyenv/bin/pyenv install $PYTHON_VERSION \
+    && pyenv global $PYTHON_VERSION \
+    && python3 -m pip install --no-cache-dir --upgrade pip \
+    && python3 -m pip install --no-cache-dir --upgrade \
         setuptools wheel virtualenv pipenv pylint rope flake8 \
         mypy autopep8 pep8 pylama pydocstyle bandit notebook \
         twine
 
 ### Rust ###
 RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.51.0 \
-    && .cargo/bin/rustup component add \
+    && .rustup component add \
         rls \
         rust-analysis \
         rust-src \
-    && .cargo/bin/rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
-    && .cargo/bin/rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null
+    && rustup completions bash | sudo tee /etc/bash_completion.d/rustup.bash-completion > /dev/null \
+    && rustup completions bash cargo | sudo tee /etc/bash_completion.d/rustup.cargo-bash-completion > /dev/null
 
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
     && sudo dpkg -i cloudflared-stable-linux-amd64.deb
+    
+# Install croc
+RUN curl https://getcroc.schollz.com | sudo bash
 
 # -----------
 
