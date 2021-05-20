@@ -1,0 +1,6 @@
+version: "1"
+rules:
+  # Sync to the master branch for Divio
+  - base: master
+    upstream: main    # change `wei` to the owner of upstream repo
+    mergeMethod: hardreset
