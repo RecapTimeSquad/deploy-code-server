@@ -64,7 +64,7 @@ $ sh /home/coder/push_remote.sh # save your uncomitted files to the remote
 $ sh /home/coder/pull_remote.sh # get latest files from the remote
 
 # In VS Code:
-# use items in bottom bar or ctrl + P, run task: push_remote or pull_remote or 
+# use items in bottom bar or ctrl + P, run task: push_remote or pull_remote or
 ```
 
 ---

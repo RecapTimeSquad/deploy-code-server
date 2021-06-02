@@ -43,4 +43,4 @@ You also need to specity a `PASSWORD` and a `GIT_REPO` to clone in your environm
 
 1. (Optional): [Configure rclone](https://github.com/cdr/deploy-code-server/tree/main/deploy-container#-persist-your-filesystem-with-rclone) so that you can save your VS Code config and files without commiting
 
-See the [deploy-container README](../deploy-container) for other config vars for your environment. 
+See the [deploy-container README](../deploy-container) for other config vars for your environment.
