@@ -86,7 +86,7 @@ RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-to
 # install Cloudflared
 RUN wget -q https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.deb \
     && sudo dpkg -i cloudflared-stable-linux-amd64.deb
-    
+
 # Install croc
 RUN curl https://getcroc.schollz.com | sudo bash
 
