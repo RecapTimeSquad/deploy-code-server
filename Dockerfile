@@ -41,7 +41,7 @@ RUN sudo apt install --yes --no-install-recommends make build-essential libssl-d
 RUN code-server --install-extension esbenp.prettier-vscode
 
 # hard-code versions using environment variables during build-time
-ENV NODE_VERSION=14.17.1 \
+ENV NODE_VERSION=14.17.3 \
     GOLANG_VERSION=1.16.3 \
     PYTHON_VERSION=3.8.9
 
